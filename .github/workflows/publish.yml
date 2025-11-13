@@ -54,8 +54,8 @@ jobs:
 
       - name: Publish to JSR (dry run)
         if: github.event.inputs.dry_run == 'true'
-        run: npx jsr publish --dry-run
+        run: deno publish --dry-run
 
       - name: Publish to JSR
         if: github.event.inputs.dry_run != 'true'
-        run: npx jsr publish
+        run: deno publish

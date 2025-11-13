@@ -76,4 +76,4 @@ jobs:
 
       - name: Publish to JSR
         if: steps.semantic-release.outputs.new_release_published == 'true'
-        run: npx jsr publish
+        run: deno publish
