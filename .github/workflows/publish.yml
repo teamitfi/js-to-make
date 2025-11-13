@@ -1,0 +1,61 @@
+name: Publish to JSR
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+    workflow_dispatch:
+        inputs:
+            dry_run:
+                description: "Dry run (skip publishing)"
+                required: false
+                default: "false"
+
+jobs:
+    test:
+        name: Run Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@v1
+              with:
+                  deno-version: v1.x
+
+            - name: Run linter
+              run: deno lint
+
+            - name: Run formatter check
+              run: deno fmt --check
+
+            - name: Run tests
+              run: deno task test
+
+    publish:
+        name: Publish to JSR
+        needs: test
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@v1
+              with:
+                  deno-version: v1.x
+
+            - name: Publish to JSR (dry run)
+              if: github.event.inputs.dry_run == 'true'
+              run: deno publish --dry-run
+
+            - name: Publish to JSR
+              if: github.event.inputs.dry_run != 'true'
+              run: deno publish

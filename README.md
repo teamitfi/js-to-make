@@ -12,26 +12,36 @@ A Deno CLI tool that automatically generates a Makefile from your `package.json`
 
 ## Installation
 
-### Option 1: Clone and Install Locally
+### Option 1: Install from JSR (Recommended)
+
+```bash
+deno install -g -A --name js-to-make jsr:@teamitfi/js-to-make
+```
+
+Or with specific permissions:
+
+```bash
+deno install -g --allow-read --allow-write --name js-to-make jsr:@teamitfi/js-to-make
+```
+
+### Option 2: Run Directly from JSR
+
+```bash
+deno run -A jsr:@teamitfi/js-to-make
+```
+
+Or with specific permissions:
+
+```bash
+deno run --allow-read --allow-write jsr:@teamitfi/js-to-make
+```
+
+### Option 3: Clone and Install Locally
 
 ```bash
 git clone https://github.com/teamitfi/js-to-make.git
 cd js-to-make
 deno task install
-```
-
-### Option 2: Direct Install (requires authentication for private repo)
-
-```bash
-deno install --global --allow-read --allow-write --name js-to-make https://raw.githubusercontent.com/teamitfi/js-to-make/main/main.ts
-```
-
-**Note:** Since this is a private repository, you'll need to be authenticated with GitHub to use direct install. Local installation (Option 1) is recommended.
-
-### Option 3: Run Directly (requires authentication for private repo)
-
-```bash
-deno run --allow-read --allow-write https://raw.githubusercontent.com/teamitfi/js-to-make/main/main.ts
 ```
 
 ## Usage
@@ -179,6 +189,43 @@ All of these have been fixed in the Deno version:
 3. ✅ Uses `Deno.cwd()` and `Deno.args`
 4. ✅ Fixed string template issues
 5. ✅ Proper async/await error handling
+
+## Contributing
+
+We welcome contributions! This project uses automated semantic versioning based on conventional commits.
+
+- 📖 Read our [Contributing Guide](./CONTRIBUTING.md) for detailed instructions
+- 🔄 Releases happen automatically when you push to `main`
+- 📝 Use [conventional commits](https://www.conventionalcommits.org/) for your commit messages
+- ✅ All PRs are automatically tested (lint, format, tests)
+
+### Quick Start for Contributors
+
+```bash
+# Clone the repository
+git clone https://github.com/teamitfi/js-to-make.git
+cd js-to-make
+
+# Make your changes
+# ...
+
+# Commit using conventional commits
+git commit -m "feat: add new feature"
+git commit -m "fix: resolve bug"
+
+# Push to your branch and create a PR
+git push origin your-branch
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for commit message format and workflow details.
+
+## Publishing
+
+This project uses automated publishing to JSR via GitHub Actions:
+
+- 🤖 **Automatic releases** on push to `main` (using semantic-release)
+- 📦 Published to [JSR](https://jsr.io/@teamitfi/js-to-make)
+- 📋 See [PUBLISHING.md](./PUBLISHING.md) for details
 
 ## License
 

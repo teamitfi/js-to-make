@@ -1,0 +1,16 @@
+{
+  "name": "@teamitfi/js-to-make",
+  "version": "1.0.0",
+  "exports": "./main.ts",
+  "publish": {
+    "exclude": [
+      ".git",
+      ".github",
+      ".gitignore",
+      "tests/",
+      "package.json",
+      "index.ts",
+      "Makefile"
+    ]
+  }
+}

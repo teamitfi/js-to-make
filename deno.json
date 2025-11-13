@@ -1,4 +1,19 @@
 {
+  "name": "@teamitfi/js-to-make",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": "./main.ts",
+  "publish": {
+    "exclude": [
+      ".git",
+      ".github",
+      ".gitignore",
+      "tests/",
+      "package.json",
+      "index.ts",
+      "Makefile"
+    ]
+  },
   "tasks": {
     "js-to-make": "deno run --allow-read --allow-write main.ts",
     "install": "deno install --global --allow-read --allow-write --name js-to-make main.ts",

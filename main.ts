@@ -20,9 +20,9 @@
  *   - Targets are created for scripts that don't start with "pre"/"post".
  */
 
-import { parse } from "https://deno.land/std@0.208.0/flags/mod.ts";
-import { join } from "https://deno.land/std@0.208.0/path/mod.ts";
-import { exists } from "https://deno.land/std@0.208.0/fs/mod.ts";
+import { parseArgs } from "jsr:@std/cli@1/parse-args";
+import { join } from "jsr:@std/path@1/join";
+import { exists } from "jsr:@std/fs@1/exists";
 
 interface PackageManager {
   pm: "npm" | "pnpm" | "yarn" | "bun";
@@ -200,7 +200,7 @@ function generateMakefile(
 }
 
 async function main() {
-  const args = parse(Deno.args, {
+  const args = parseArgs(Deno.args, {
     boolean: ["force", "help"],
     alias: { h: "help", f: "force" },
   });
