@@ -32,10 +32,17 @@ function detectPackageManager(projectRoot: string): {
 } {
   // 1) Respect package.json "packageManager" field when present
   try {
-    const pkgRaw = fs.readFileSync(path.join(projectRoot, "package.json"), "utf8");
+    const pkgRaw = fs.readFileSync(
+      path.join(projectRoot, "package.json"),
+      "utf8",
+    );
     const pkg = JSON.parse(pkgRaw);
     if (typeof pkg.packageManager === "string") {
-      const name = String(pkg.packageManager).split("@")[0] as "npm" | "pnpm" | "yarn" | "bun";
+      const name = String(pkg.packageManager).split("@")[0] as
+        | "npm"
+        | "pnpm"
+        | "yarn"
+        | "bun";
       return normalizePM(name);
     }
   } catch {
@@ -89,7 +96,10 @@ function toMakeTarget(scriptName: string) {
 }
 
 /** Generate the Makefile text */
-function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: string }, scripts: Record<string, string>) {
+function generateMakefile(
+  pmInfo: { pm: string; installCmd: string; runCmd: string },
+  scripts: Record<string, string>,
+) {
   const now = new Date().toISOString();
 
   const entries: string[] = [];
@@ -155,7 +165,9 @@ function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: stri
   }
   helpLines.push(`@echo \"\"`);
   helpLines.push(`@echo \"Convenience aliases:\"`);
-  helpLines.push(`@echo \"  s->start  d->dev  b->build  t->test  l->lint  i->install\"`);
+  helpLines.push(
+    `@echo \"  s->start  d->dev  b->build  t->test  l->lint  i->install\"`,
+  );
 
   const phonyScripts = scriptEntries.map(([n]) => toMakeTarget(n)).join(" ");
   const header = [

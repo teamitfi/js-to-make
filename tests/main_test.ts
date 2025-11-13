@@ -24,7 +24,9 @@ function assertEquals<T>(
 function assertNotEquals<T>(
   actual: T,
   expected: T,
-  message = `Expected ${formatValue(actual)} to not equal ${formatValue(expected)}`,
+  message = `Expected ${formatValue(actual)} to not equal ${
+    formatValue(expected)
+  }`,
 ) {
   if (Object.is(actual, expected)) {
     throw new Error(message);
@@ -56,8 +58,7 @@ const SAMPLE_SCRIPTS: Record<string, string> = {
   "docker:dev": "docker-compose up --build",
   "docker:dev-with-agent":
     "docker-compose -f docker-compose.full.yml up --build",
-  "docker:dev-ui-only":
-    "docker-compose -f docker-compose.dev.yml up --build",
+  "docker:dev-ui-only": "docker-compose -f docker-compose.dev.yml up --build",
   release: "semantic-release",
   changelog: "conventional-changelog -p angular -i CHANGELOG.md -s",
   "version:patch": "pnpm version patch",

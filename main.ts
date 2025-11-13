@@ -32,7 +32,7 @@ export interface PackageManager {
 
 /** Map packageManager to install/run commands */
 async function detectPackageManager(
-  projectRoot: string
+  projectRoot: string,
 ): Promise<PackageManager> {
   // 1) Respect package.json "packageManager" field when present
   try {
@@ -67,7 +67,9 @@ async function detectPackageManager(
   return normalizePM("npm");
 }
 
-export function normalizePM(pm: "npm" | "pnpm" | "yarn" | "bun"): PackageManager {
+export function normalizePM(
+  pm: "npm" | "pnpm" | "yarn" | "bun",
+): PackageManager {
   switch (pm) {
     case "pnpm":
       return { pm, installCmd: "pnpm install", runCmd: "pnpm run" };
@@ -84,7 +86,7 @@ export function normalizePM(pm: "npm" | "pnpm" | "yarn" | "bun"): PackageManager
 
 /** Read package.json scripts */
 async function readScripts(
-  projectRoot: string
+  projectRoot: string,
 ): Promise<Record<string, string>> {
   const pkgPath = join(projectRoot, "package.json");
   if (!(await exists(pkgPath))) {
@@ -103,7 +105,7 @@ function toMakeTarget(scriptName: string): string {
 /** Generate the Makefile text */
 export function generateMakefile(
   pmInfo: PackageManager,
-  scripts: Record<string, string>
+  scripts: Record<string, string>,
 ): string {
   const now = new Date().toISOString();
 
@@ -117,7 +119,7 @@ export function generateMakefile(
   for (const [name, cmd] of scriptEntries) {
     const target = toMakeTarget(name);
     entries.push(
-      `# ${name} — ${cmd}\n${target}:\n\t${pmInfo.runCmd} ${name}\n`
+      `# ${name} — ${cmd}\n${target}:\n\t${pmInfo.runCmd} ${name}\n`,
     );
   }
 
@@ -132,7 +134,7 @@ export function generateMakefile(
   for (const [alias, script] of aliasMap) {
     if (scripts[script]) {
       entries.push(
-        `# alias: ${alias} -> ${script}\n${alias}: ${toMakeTarget(script)}\n`
+        `# alias: ${alias} -> ${script}\n${alias}: ${toMakeTarget(script)}\n`,
       );
     }
   }
@@ -164,7 +166,7 @@ export function generateMakefile(
   helpLines.push(`\t@echo ""`);
   helpLines.push(`\t@echo "Convenience aliases:"`);
   helpLines.push(
-    `\t@echo "  s->start  d->dev  b->build  t->test  l->lint  i->install"`
+    `\t@echo "  s->start  d->dev  b->build  t->test  l->lint  i->install"`,
   );
 
   const phonyScripts = scriptEntries.map(([n]) => toMakeTarget(n)).join(" ");

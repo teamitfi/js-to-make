@@ -131,6 +131,7 @@ d: dev
 ## Permissions
 
 This tool requires:
+
 - `--allow-read`: To read package.json and check for lock files
 - `--allow-write`: To create/overwrite the Makefile
 
@@ -164,6 +165,7 @@ The project includes comprehensive tests using Deno's built-in test framework. T
 - ✅ Special targets (changelog, release)
 
 Run tests:
+
 ```bash
 deno test
 ```

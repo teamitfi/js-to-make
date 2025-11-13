@@ -17,17 +17,20 @@ This document explains the automated and manual publishing processes for the `js
 The following files have been set up for JSR publishing:
 
 ### `deno.json`
+
 - Contains package metadata (name, version, license)
 - Defines exports and publish exclusions
 - Current version: `1.0.0`
 
 ### `.github/workflows/publish.yml`
+
 - GitHub Actions workflow for automated publishing
 - Triggers on:
   - **Git tags** matching pattern `v*.*.*` (e.g., `v1.0.0`)
   - **Manual workflow dispatch** (with dry-run option)
 
 ### `jsr.json`
+
 - Additional JSR-specific configuration
 - Mirrors the publish settings in `deno.json`
 
@@ -43,10 +46,10 @@ The following files have been set up for JSR publishing:
    ```bash
    # For a new feature (bumps minor version 1.X.0)
    git commit -m "feat: add support for deno workspaces"
-   
+
    # For a bug fix (bumps patch version 1.0.X)
    git commit -m "fix: handle edge case in package detection"
-   
+
    # For a breaking change (bumps major version X.0.0)
    git commit -m "feat!: redesign CLI interface"
    ```
@@ -69,17 +72,17 @@ The following files have been set up for JSR publishing:
 
 #### Commit Types & Version Bumps
 
-| Commit Type | Example | Version Impact |
-|-------------|---------|----------------|
-| `feat:` | `feat: add new feature` | Minor (1.X.0) |
-| `fix:` | `fix: resolve bug` | Patch (1.0.X) |
-| `feat!:` | `feat!: breaking change` | Major (X.0.0) |
-| `docs:` | `docs: update README` | Patch (1.0.X) |
-| `refactor:` | `refactor: improve code` | Patch (1.0.X) |
-| `perf:` | `perf: optimize parsing` | Patch (1.0.X) |
-| `test:` | `test: add tests` | No release |
-| `chore:` | `chore: update deps` | No release |
-| `ci:` | `ci: update workflow` | No release |
+| Commit Type | Example                  | Version Impact |
+| ----------- | ------------------------ | -------------- |
+| `feat:`     | `feat: add new feature`  | Minor (1.X.0)  |
+| `fix:`      | `fix: resolve bug`       | Patch (1.0.X)  |
+| `feat!:`    | `feat!: breaking change` | Major (X.0.0)  |
+| `docs:`     | `docs: update README`    | Patch (1.0.X)  |
+| `refactor:` | `refactor: improve code` | Patch (1.0.X)  |
+| `perf:`     | `perf: optimize parsing` | Patch (1.0.X)  |
+| `test:`     | `test: add tests`        | No release     |
+| `chore:`    | `chore: update deps`     | No release     |
+| `ci:`       | `ci: update workflow`    | No release     |
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed commit message guidelines.
 
@@ -183,6 +186,7 @@ deno run --allow-read --allow-write jsr:@teamitfi/js-to-make
 ```
 
 Check your package on JSR:
+
 - https://jsr.io/@teamitfi/js-to-make
 
 ## Troubleshooting
@@ -190,17 +194,20 @@ Check your package on JSR:
 ### "Uncommitted changes" Error
 
 If you get this error during `deno publish`:
+
 ```
 error: Aborting due to uncommitted changes
 ```
 
 Either:
+
 - Commit your changes: `git add . && git commit -m "message"`
 - Or use: `deno publish --allow-dirty` (not recommended for releases)
 
 ### "Invalid external import" Error
 
 Make sure all imports use JSR-compatible specifiers:
+
 - ✅ `jsr:@std/cli@1/parse-args`
 - ✅ `jsr:@std/path@1/join`
 - ✅ `npm:some-package`
@@ -209,10 +216,11 @@ Make sure all imports use JSR-compatible specifiers:
 ### GitHub Actions Permission Error
 
 Ensure the workflow has the correct permissions in `.github/workflows/publish.yml`:
+
 ```yaml
 permissions:
   contents: read
-  id-token: write  # Required for JSR publishing
+  id-token: write # Required for JSR publishing
 ```
 
 ## Testing Before Release
@@ -254,6 +262,7 @@ If this is your first time publishing to JSR:
 ## Scope Management
 
 The package is published under the `@teamitfi` scope. Make sure:
+
 - You have access to this scope on JSR
 - The scope name matches your organization/username on JSR
 - If needed, you can create the scope on your first publish

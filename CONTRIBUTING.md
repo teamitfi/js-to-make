@@ -5,6 +5,7 @@ Thank you for your interest in contributing! This project uses automated semanti
 ## 🔄 Automated Release Process
 
 This project uses **semantic-release** to automatically:
+
 - ✅ Determine the next version number based on commit messages
 - ✅ Generate release notes and CHANGELOG
 - ✅ Update version in `deno.json`
@@ -27,19 +28,19 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 
 ### Commit Types
 
-| Type | Description | Version Bump | Example |
-|------|-------------|--------------|---------|
-| `feat` | New feature | **Minor** (0.X.0) | `feat: add support for bun package manager` |
-| `fix` | Bug fix | **Patch** (0.0.X) | `fix: correct makefile generation for yarn` |
-| `perf` | Performance improvement | **Patch** (0.0.X) | `perf: optimize package.json parsing` |
-| `docs` | Documentation only | **Patch** (0.0.X) | `docs: update installation instructions` |
-| `refactor` | Code refactoring | **Patch** (0.0.X) | `refactor: simplify PM detection logic` |
-| `style` | Code style changes | No release | `style: format with deno fmt` |
-| `test` | Adding/updating tests | No release | `test: add tests for CI target` |
-| `chore` | Maintenance tasks | No release | `chore: update dependencies` |
-| `ci` | CI/CD changes | No release | `ci: update GitHub Actions workflow` |
-| `build` | Build system changes | No release | `build: update deno configuration` |
-| `revert` | Revert a previous commit | **Patch** (0.0.X) | `revert: undo previous feature` |
+| Type       | Description              | Version Bump      | Example                                     |
+| ---------- | ------------------------ | ----------------- | ------------------------------------------- |
+| `feat`     | New feature              | **Minor** (0.X.0) | `feat: add support for bun package manager` |
+| `fix`      | Bug fix                  | **Patch** (0.0.X) | `fix: correct makefile generation for yarn` |
+| `perf`     | Performance improvement  | **Patch** (0.0.X) | `perf: optimize package.json parsing`       |
+| `docs`     | Documentation only       | **Patch** (0.0.X) | `docs: update installation instructions`    |
+| `refactor` | Code refactoring         | **Patch** (0.0.X) | `refactor: simplify PM detection logic`     |
+| `style`    | Code style changes       | No release        | `style: format with deno fmt`               |
+| `test`     | Adding/updating tests    | No release        | `test: add tests for CI target`             |
+| `chore`    | Maintenance tasks        | No release        | `chore: update dependencies`                |
+| `ci`       | CI/CD changes            | No release        | `ci: update GitHub Actions workflow`        |
+| `build`    | Build system changes     | No release        | `build: update deno configuration`          |
+| `revert`   | Revert a previous commit | **Patch** (0.0.X) | `revert: undo previous feature`             |
 
 ### Breaking Changes
 
@@ -221,12 +222,14 @@ git push origin main
 ### Commit Often with Good Messages
 
 Instead of one large commit:
+
 ```bash
 # ❌ Bad
 git commit -m "lots of changes"
 ```
 
 Use multiple smaller commits:
+
 ```bash
 # ✅ Good
 git commit -m "feat: add CLI argument parsing"
@@ -237,6 +240,7 @@ git commit -m "docs: document new CLI arguments"
 ### Use Scopes for Clarity
 
 Scopes help organize commits by area:
+
 ```bash
 git commit -m "feat(cli): add new flag"
 git commit -m "fix(makefile): escape special chars"
@@ -247,6 +251,7 @@ git commit -m "test(integration): add e2e tests"
 ### Amend Commits if Needed
 
 Before pushing, you can amend your last commit:
+
 ```bash
 git commit --amend -m "feat: corrected commit message"
 ```

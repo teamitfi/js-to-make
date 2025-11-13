@@ -47,7 +47,7 @@ The workflow permissions in `.github/workflows/release.yml` and `.github/workflo
 ```yaml
 permissions:
   contents: read
-  id-token: write  # The OIDC ID token is used for authentication with JSR
+  id-token: write # The OIDC ID token is used for authentication with JSR
 ```
 
 This `id-token: write` permission allows GitHub Actions to generate an OIDC token that JSR uses to verify the publish request is coming from the correct repository.
@@ -105,12 +105,12 @@ Our `deno.json` includes all required JSR fields:
 
 ```json
 {
-  "name": "@teamitfi/js-to-make",      // ✅ Scoped package name
-  "version": "1.0.0",                  // ✅ Semantic version
-  "license": "MIT",                    // ✅ License identifier
-  "exports": "./main.ts",              // ✅ Main entry point
-  "publish": {                         // ✅ Publish configuration
-    "exclude": [                       // ✅ Files to exclude
+  "name": "@teamitfi/js-to-make", // ✅ Scoped package name
+  "version": "1.0.0", // ✅ Semantic version
+  "license": "MIT", // ✅ License identifier
+  "exports": "./main.ts", // ✅ Main entry point
+  "publish": { // ✅ Publish configuration
+    "exclude": [ // ✅ Files to exclude
       ".git",
       ".github",
       ".gitignore",
@@ -140,6 +140,7 @@ Error: This package is not linked to this repository
 If you see permission errors:
 
 **Solution**: Verify the workflow file has the correct permissions:
+
 ```yaml
 permissions:
   contents: read
