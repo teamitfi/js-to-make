@@ -12,24 +12,26 @@ A Deno CLI tool that automatically generates a Makefile from your `package.json`
 
 ## Installation
 
-### Option 1: Direct Install
+### Option 1: Clone and Install Locally
 
 ```bash
-deno install --allow-read --allow-write --name js-to-make https://raw.githubusercontent.com/yourusername/js-to-make/main/main.ts
-```
-
-### Option 2: Clone and Install Locally
-
-```bash
-git clone https://github.com/yourusername/js-to-make.git
+git clone https://github.com/teamitfi/js-to-make.git
 cd js-to-make
 deno task install
 ```
 
-### Option 3: Run Directly
+### Option 2: Direct Install (requires authentication for private repo)
 
 ```bash
-deno run --allow-read --allow-write https://raw.githubusercontent.com/yourusername/js-to-make/main/main.ts
+deno install --global --allow-read --allow-write --name js-to-make https://raw.githubusercontent.com/teamitfi/js-to-make/main/main.ts
+```
+
+**Note:** Since this is a private repository, you'll need to be authenticated with GitHub to use direct install. Local installation (Option 1) is recommended.
+
+### Option 3: Run Directly (requires authentication for private repo)
+
+```bash
+deno run --allow-read --allow-write https://raw.githubusercontent.com/teamitfi/js-to-make/main/main.ts
 ```
 
 ## Usage
