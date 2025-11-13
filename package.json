@@ -1,0 +1,15 @@
+{
+  "name": "example-project",
+  "version": "1.0.0",
+  "description": "Example project to test js-to-make",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "lint": "eslint .",
+    "start": "node dist/index.js",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "packageManager": "npm@10.0.0"
+}
