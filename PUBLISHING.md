@@ -145,12 +145,12 @@ Note: This method bypasses semantic-release and requires manual version manageme
 
 2. **Run a dry-run first** (recommended):
    ```bash
-   npx jsr publish --dry-run
+   deno publish --dry-run
    ```
 
 3. **Publish to JSR**:
    ```bash
-   npx jsr publish
+   deno publish
    ```
 
    On first publish, you'll be prompted to authenticate with JSR.
