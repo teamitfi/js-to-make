@@ -11,7 +11,8 @@
       "tests/",
       "package.json",
       "index.ts",
-      "Makefile"
+      "Makefile",
+      "deno.lock"
     ]
   },
   "tasks": {
