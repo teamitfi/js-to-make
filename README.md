@@ -12,6 +12,8 @@ A Deno CLI tool that automatically generates a Makefile from your `package.json`
 
 ## Installation
 
+> **Note:** The package must be published to JSR first. See [Publishing](#publishing) section below.
+
 ### Option 1: Install from JSR (Recommended)
 
 ```bash
