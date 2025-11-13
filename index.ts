@@ -22,6 +22,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import process from "node:process";
 
 /** Map packageManager to install/run commands */
 function detectPackageManager(projectRoot: string): {
@@ -37,7 +38,9 @@ function detectPackageManager(projectRoot: string): {
       const name = String(pkg.packageManager).split("@")[0] as "npm" | "pnpm" | "yarn" | "bun";
       return normalizePM(name);
     }
-  } catch {}
+  } catch {
+    // Ignore and fall back to lockfile detection
+  }
 
   // 2) Detect by lockfile
   const lockToPM: Array<[string, "npm" | "pnpm" | "yarn" | "bun"]> = [
@@ -103,8 +106,7 @@ function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: stri
       `${target}:`,
       `	${pmInfo.runCmd} ${name}`,
       "",
-    ].join("
-"));
+    ].join("\n"));
   }
 
   // Convenience aliases (only emit if the underlying script exists)
@@ -121,8 +123,7 @@ function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: stri
         `# alias: ${alias} -> ${script}`,
         `${alias}: ${toMakeTarget(script)}`,
         "",
-      ].join("
-"));
+      ].join("\n"));
     }
   }
   // alias for install
@@ -130,8 +131,7 @@ function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: stri
     `# alias: i -> install`,
     `i: install`,
     "",
-  ].join("
-"));
+  ].join("\n"));
 
   // Build help text lines
   const helpLines: string[] = [
@@ -182,11 +182,9 @@ function generateMakefile(pmInfo: { pm: string; installCmd: string; runCmd: stri
     scripts["build"] ? `	${pmInfo.runCmd} build` : "",
     scripts["test"] ? `	${pmInfo.runCmd} test` : "",
     ``,
-  ].filter(Boolean).join("
-");
+  ].filter(Boolean).join("\n");
 
-  return [header, ...entries].join("
-");
+  return [header, ...entries].join("\n");
 }
 
 function main() {

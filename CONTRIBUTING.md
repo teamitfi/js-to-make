@@ -123,7 +123,7 @@ git checkout -b fix/bug-description
 
 ```bash
 # Run tests
-deno task test
+deno test
 
 # Check formatting
 deno fmt --check
@@ -180,7 +180,7 @@ When you create a PR or push to main, GitHub Actions will automatically:
 
 1. ✅ Run linter (`deno lint`)
 2. ✅ Check code formatting (`deno fmt --check`)
-3. ✅ Run all tests (`deno task test`)
+3. ✅ Run all tests (`deno test`)
 4. ✅ On merge to main: Analyze commits and create release if needed
 
 ## 📦 Release Process (Automatic)
@@ -261,7 +261,7 @@ git commit --amend -m "feat: corrected commit message"
 ## 📋 Checklist Before Submitting PR
 
 - [ ] Code follows Deno conventions
-- [ ] Tests pass (`deno task test`)
+- [ ] Tests pass (`deno test`)
 - [ ] Code is formatted (`deno fmt`)
 - [ ] Code is linted (`deno lint`)
 - [ ] Commit messages follow conventional commits format

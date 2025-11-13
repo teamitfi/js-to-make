@@ -24,7 +24,7 @@ import { parseArgs } from "jsr:@std/cli@1/parse-args";
 import { join } from "jsr:@std/path@1/join";
 import { exists } from "jsr:@std/fs@1/exists";
 
-interface PackageManager {
+export interface PackageManager {
   pm: "npm" | "pnpm" | "yarn" | "bun";
   installCmd: string;
   runCmd: string;
@@ -67,7 +67,7 @@ async function detectPackageManager(
   return normalizePM("npm");
 }
 
-function normalizePM(pm: "npm" | "pnpm" | "yarn" | "bun"): PackageManager {
+export function normalizePM(pm: "npm" | "pnpm" | "yarn" | "bun"): PackageManager {
   switch (pm) {
     case "pnpm":
       return { pm, installCmd: "pnpm install", runCmd: "pnpm run" };
@@ -101,7 +101,7 @@ function toMakeTarget(scriptName: string): string {
 }
 
 /** Generate the Makefile text */
-function generateMakefile(
+export function generateMakefile(
   pmInfo: PackageManager,
   scripts: Record<string, string>
 ): string {

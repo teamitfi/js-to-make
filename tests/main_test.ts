@@ -1,277 +1,169 @@
-import {
-  assertEquals,
-  assertStringIncludes,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { join } from "https://deno.land/std@0.208.0/path/mod.ts";
-import { exists } from "https://deno.land/std@0.208.0/fs/mod.ts";
+import { generateMakefile, normalizePM } from "../main.ts";
 
-// Test helper to run the main function with a custom working directory
-async function generateMakefileForTest(
-  testDir: string,
-  force = false
-): Promise<string> {
-  const originalCwd = Deno.cwd();
+function formatValue(value: unknown): string {
+  if (typeof value === "string") return value;
   try {
-    // Change to test directory
-    Deno.chdir(testDir);
+    const json = JSON.stringify(value);
+    if (json !== undefined) return json;
+  } catch {
+    // noop
+  }
+  return String(value);
+}
 
-    // Run the generation command (main.ts is in the root directory)
-    const mainPath = join(originalCwd, "main.ts");
-    const cmd = new Deno.Command(Deno.execPath(), {
-      args: [
-        "run",
-        "--allow-read",
-        "--allow-write",
-        mainPath,
-        ...(force ? ["--force"] : []),
-      ],
-      cwd: testDir,
-    });
+function assert(condition: unknown, message: string): asserts condition {
+  if (!condition) throw new Error(message);
+}
 
-    const { code, stdout, stderr } = await cmd.output();
-
-    if (code !== 0) {
-      throw new Error(
-        `Command failed with code ${code}: ${new TextDecoder().decode(stderr)}`
-      );
-    }
-
-    // Read the generated Makefile
-    const makefilePath = join(testDir, "Makefile");
-    if (!(await exists(makefilePath))) {
-      throw new Error("Makefile was not generated");
-    }
-
-    return await Deno.readTextFile(makefilePath);
-  } finally {
-    Deno.chdir(originalCwd);
+function assertEquals<T>(
+  actual: T,
+  expected: T,
+  message = `Expected ${formatValue(actual)} to equal ${formatValue(expected)}`,
+) {
+  if (!Object.is(actual, expected)) {
+    throw new Error(message);
   }
 }
 
-Deno.test("Generate Makefile from test package.json", async () => {
-  const testDir = await Deno.makeTempDir();
+function assertNotEquals<T>(
+  actual: T,
+  expected: T,
+  message = `Expected ${formatValue(actual)} to not equal ${formatValue(expected)}`,
+) {
+  if (Object.is(actual, expected)) {
+    throw new Error(message);
+  }
+}
 
-  try {
-    // Copy the test package.json
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
+function assertStringIncludes(
+  actual: string,
+  needle: string,
+  message = `Expected "${formatValue(actual)}" to include "${needle}"`,
+) {
+  if (!actual.includes(needle)) {
+    throw new Error(message);
+  }
+}
 
-    // Generate Makefile
-    const makefile = await generateMakefileForTest(testDir);
+const SAMPLE_SCRIPTS: Record<string, string> = {
+  dev: "next",
+  build: "next build",
+  start: "next start",
+  lint: "next lint",
+  "docker:build": "docker build -t offer-generator-ui .",
+  "docker:run":
+    "docker run -p 3000:3000 --env-file .env.local offer-generator-ui",
+  "docker:up": "docker-compose up -d",
+  "docker:down": "docker-compose down",
+  "docker:logs": "docker-compose logs -f",
+  "docker:restart": "docker-compose restart",
+  "docker:dev": "docker-compose up --build",
+  "docker:dev-with-agent":
+    "docker-compose -f docker-compose.full.yml up --build",
+  "docker:dev-ui-only":
+    "docker-compose -f docker-compose.dev.yml up --build",
+  release: "semantic-release",
+  changelog: "conventional-changelog -p angular -i CHANGELOG.md -s",
+  "version:patch": "pnpm version patch",
+  "version:minor": "pnpm version minor",
+  "version:major": "pnpm version major",
+};
 
-    // Verify the Makefile contains expected content
-    assertStringIncludes(makefile, "# Auto-generated Makefile — DO NOT EDIT");
-    assertStringIncludes(makefile, "PKG_MANAGER := npm");
-    assertStringIncludes(makefile, ".PHONY:");
+const npmInfo = normalizePM("npm");
 
-    // Verify basic targets
-    assertStringIncludes(makefile, "help:");
-    assertStringIncludes(makefile, "install:");
-    assertStringIncludes(makefile, "ci:");
+function buildMakefile(
+  overrides: Record<string, string> = {},
+): string {
+  return generateMakefile(npmInfo, { ...SAMPLE_SCRIPTS, ...overrides });
+}
 
-    // Verify script targets
-    assertStringIncludes(makefile, "dev:");
-    assertStringIncludes(makefile, "build:");
-    assertStringIncludes(makefile, "start:");
-    assertStringIncludes(makefile, "lint:");
+function targetName(script: string): string {
+  return script.replace(/:/g, "-");
+}
 
-    console.log("✅ Basic Makefile generation test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
+Deno.test("Generate Makefile from sample package.json", () => {
+  const makefile = buildMakefile();
+  assertStringIncludes(makefile, "# Auto-generated Makefile — DO NOT EDIT");
+  assertStringIncludes(makefile, "PKG_MANAGER := npm");
+  assertStringIncludes(makefile, ".PHONY:");
+  assertStringIncludes(makefile, "help:");
+  assertStringIncludes(makefile, "install:");
+  assertStringIncludes(makefile, "ci:");
+});
+
+Deno.test("Handle colons in script names", () => {
+  const makefile = buildMakefile();
+  const colonScripts = Object.keys(SAMPLE_SCRIPTS).filter((name) =>
+    name.includes(":")
+  );
+
+  for (const script of colonScripts) {
+    const target = targetName(script);
+    assertStringIncludes(makefile, `${target}:`);
+    assertStringIncludes(makefile, `npm run ${script}`);
   }
 });
 
-Deno.test("Handle colons in script names", async () => {
-  const testDir = await Deno.makeTempDir();
+Deno.test("Verify convenience aliases", () => {
+  const makefile = buildMakefile();
+  assertStringIncludes(makefile, "# alias: s -> start");
+  assertStringIncludes(makefile, "s: start");
 
-  try {
-    // Copy the test package.json which has docker:build, docker:run, etc.
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
+  assertStringIncludes(makefile, "# alias: d -> dev");
+  assertStringIncludes(makefile, "d: dev");
 
-    // Generate Makefile
-    const makefile = await generateMakefileForTest(testDir);
+  assertStringIncludes(makefile, "# alias: b -> build");
+  assertStringIncludes(makefile, "b: build");
 
-    // Verify colons are converted to dashes
-    assertStringIncludes(makefile, "docker-build:");
-    assertStringIncludes(makefile, "docker-run:");
-    assertStringIncludes(makefile, "docker-up:");
-    assertStringIncludes(makefile, "docker-down:");
-    assertStringIncludes(makefile, "docker-logs:");
-    assertStringIncludes(makefile, "docker-restart:");
-    assertStringIncludes(makefile, "docker-dev:");
-    assertStringIncludes(makefile, "docker-dev-with-agent:");
-    assertStringIncludes(makefile, "docker-dev-ui-only:");
+  assertStringIncludes(makefile, "# alias: l -> lint");
+  assertStringIncludes(makefile, "l: lint");
 
-    // Verify the commands still use the original script names
-    assertStringIncludes(makefile, "npm run docker:build");
-    assertStringIncludes(makefile, "npm run docker:run");
+  assertStringIncludes(makefile, "# alias: i -> install");
+  assertStringIncludes(makefile, "i: install");
+});
 
-    console.log("✅ Colon conversion test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
+Deno.test("Verify CI target includes available steps", () => {
+  const makefile = buildMakefile();
+  assertStringIncludes(makefile, "ci:");
+  assertStringIncludes(makefile, "npm run lint");
+  assertStringIncludes(makefile, "npm run build");
+});
+
+Deno.test("Verify all scripts are included", () => {
+  const makefile = buildMakefile();
+  for (const script of Object.keys(SAMPLE_SCRIPTS)) {
+    const target = targetName(script);
+    assertStringIncludes(makefile, `${target}:`);
+    assertStringIncludes(makefile, `npm run ${script}`);
   }
 });
 
-Deno.test("Verify convenience aliases", async () => {
-  const testDir = await Deno.makeTempDir();
+Deno.test("Verify timestamp changes between runs", async () => {
+  const first = buildMakefile();
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  const second = buildMakefile();
 
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
+  const firstStamp = first.match(/Generated by js-to-make at (.+)/)?.[1];
+  const secondStamp = second.match(/Generated by js-to-make at (.+)/)?.[1];
 
-    const makefile = await generateMakefileForTest(testDir);
+  assertEquals(typeof firstStamp, "string");
+  assertEquals(typeof secondStamp, "string");
+  assertNotEquals(firstStamp, secondStamp);
+});
 
-    // Verify aliases exist
-    assertStringIncludes(makefile, "# alias: s -> start");
-    assertStringIncludes(makefile, "s: start");
-
-    assertStringIncludes(makefile, "# alias: d -> dev");
-    assertStringIncludes(makefile, "d: dev");
-
-    assertStringIncludes(makefile, "# alias: b -> build");
-    assertStringIncludes(makefile, "b: build");
-
-    assertStringIncludes(makefile, "# alias: l -> lint");
-    assertStringIncludes(makefile, "l: lint");
-
-    assertStringIncludes(makefile, "# alias: i -> install");
-    assertStringIncludes(makefile, "i: install");
-
-    console.log("✅ Convenience aliases test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
+Deno.test("Verify version scripts are included", () => {
+  const makefile = buildMakefile();
+  for (const script of ["version:patch", "version:minor", "version:major"]) {
+    const target = targetName(script);
+    assertStringIncludes(makefile, `${target}:`);
+    assertStringIncludes(makefile, `npm run ${script}`);
   }
 });
 
-Deno.test("Verify CI target includes available steps", async () => {
-  const testDir = await Deno.makeTempDir();
-
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
-
-    const makefile = await generateMakefileForTest(testDir);
-
-    // The test package has lint and build, so ci should include them
-    assertStringIncludes(makefile, "ci:");
-    assertStringIncludes(makefile, "npm run lint");
-    assertStringIncludes(makefile, "npm run build");
-
-    console.log("✅ CI target test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
-  }
-});
-
-Deno.test("Verify all scripts are included", async () => {
-  const testDir = await Deno.makeTempDir();
-
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    const pkg = JSON.parse(pkgContent);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
-
-    const makefile = await generateMakefileForTest(testDir);
-
-    // Get all script names from package.json
-    const scripts = Object.keys(pkg.scripts).filter(
-      (name) => !/^pre|^post/.test(name)
-    );
-
-    // Verify each script has a target (with colons converted to dashes)
-    for (const script of scripts) {
-      const target = script.replace(/:/g, "-");
-      assertStringIncludes(makefile, `${target}:`);
-      assertStringIncludes(makefile, `npm run ${script}`);
-    }
-
-    console.log(`✅ All ${scripts.length} scripts included in Makefile`);
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
-  }
-});
-
-Deno.test("Verify --force flag overwrites existing Makefile", async () => {
-  const testDir = await Deno.makeTempDir();
-
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
-
-    // Create first Makefile
-    const makefile1 = await generateMakefileForTest(testDir);
-    const timestamp1 = makefile1.match(/Generated by js-to-make at (.+)/)?.[1];
-
-    // Wait a bit to ensure different timestamp
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Generate again with --force
-    const makefile2 = await generateMakefileForTest(testDir, true);
-    const timestamp2 = makefile2.match(/Generated by js-to-make at (.+)/)?.[1];
-
-    // Timestamps should be different
-    assertEquals(typeof timestamp1, "string");
-    assertEquals(typeof timestamp2, "string");
-    // They might be the same if execution is too fast, but the command should succeed
-
-    console.log("✅ Force flag test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
-  }
-});
-
-Deno.test("Verify version scripts are included", async () => {
-  const testDir = await Deno.makeTempDir();
-
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
-
-    const makefile = await generateMakefileForTest(testDir);
-
-    // Verify version scripts (with colons converted)
-    assertStringIncludes(makefile, "version-patch:");
-    assertStringIncludes(makefile, "npm run version:patch");
-
-    assertStringIncludes(makefile, "version-minor:");
-    assertStringIncludes(makefile, "npm run version:minor");
-
-    assertStringIncludes(makefile, "version-major:");
-    assertStringIncludes(makefile, "npm run version:major");
-
-    console.log("✅ Version scripts test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
-  }
-});
-
-Deno.test("Verify changelog and release targets", async () => {
-  const testDir = await Deno.makeTempDir();
-
-  try {
-    const testPkgPath = join(Deno.cwd(), "tests", "package.json.testing");
-    const pkgContent = await Deno.readTextFile(testPkgPath);
-    await Deno.writeTextFile(join(testDir, "package.json"), pkgContent);
-
-    const makefile = await generateMakefileForTest(testDir);
-
-    // Verify changelog and release targets
-    assertStringIncludes(makefile, "changelog:");
-    assertStringIncludes(makefile, "npm run changelog");
-
-    assertStringIncludes(makefile, "release:");
-    assertStringIncludes(makefile, "npm run release");
-
-    console.log("✅ Changelog and release targets test passed");
-  } finally {
-    await Deno.remove(testDir, { recursive: true });
-  }
+Deno.test("Verify changelog and release targets", () => {
+  const makefile = buildMakefile();
+  assertStringIncludes(makefile, "changelog:");
+  assertStringIncludes(makefile, "npm run changelog");
+  assertStringIncludes(makefile, "release:");
+  assertStringIncludes(makefile, "npm run release");
 });

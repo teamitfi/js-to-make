@@ -147,7 +147,7 @@ deno lint
 deno task js-to-make
 
 # Run tests
-deno task test
+deno test
 ```
 
 ## Testing
@@ -165,12 +165,8 @@ The project includes comprehensive tests using Deno's built-in test framework. T
 
 Run tests:
 ```bash
-deno task test
-# or
-deno test --allow-read --allow-write --allow-run main_test.ts
+deno test
 ```
-
-All tests use the `tests/package.json.testing` file which contains a real-world example with 18 scripts including docker commands, versioning, and build tools.
 
 ## Issues Fixed from Original
 

@@ -219,7 +219,7 @@ permissions:
 
 1. **Run tests**:
    ```bash
-   deno task test
+   deno test
    ```
 
 2. **Check formatting**:
@@ -260,7 +260,7 @@ The package is published under the `@teamitfi` scope. Make sure:
 
 ## Checklist Before Publishing
 
-- [ ] All tests pass (`deno task test`)
+- [ ] All tests pass (`deno test`)
 - [ ] Code is formatted (`deno fmt`)
 - [ ] Code is linted (`deno lint`)
 - [ ] Version number is updated in `deno.json`
