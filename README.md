@@ -225,7 +225,8 @@ This project uses automated publishing to JSR via GitHub Actions:
 
 - 🤖 **Automatic releases** on push to `main` (using semantic-release)
 - 📦 Published to [JSR](https://jsr.io/@teamitfi/js-to-make)
-- 📋 See [PUBLISHING.md](./PUBLISHING.md) for details
+- ⚙️ **First-time setup required**: See [SETUP.md](./SETUP.md) to link package to GitHub
+- 📋 See [PUBLISHING.md](./PUBLISHING.md) for publishing details
 
 ## License
 

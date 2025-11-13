@@ -1,79 +1,79 @@
 name: Release & Publish
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-    check:
-        name: Check & Test
-        runs-on: ubuntu-latest
+  check:
+    name: Check & Test
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Setup Deno
-              uses: denoland/setup-deno@v1
-              with:
-                  deno-version: v1.x
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
 
-            - name: Run linter
-              run: deno lint
+      - name: Run linter
+        run: deno lint
 
-            - name: Run formatter check
-              run: deno fmt --check
+      - name: Run formatter check
+        run: deno fmt --check
 
-            - name: Run tests
-              run: deno task test
+      - name: Run tests
+        run: deno task test
 
-    release:
-        name: Semantic Release
-        needs: check
-        runs-on: ubuntu-latest
-        # Only run on push to main, not on PRs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  release:
+    name: Semantic Release
+    needs: check
+    runs-on: ubuntu-latest
+    # Only run on push to main, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-        permissions:
-            contents: write
-            id-token: write
-            issues: write
-            pull-requests: write
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-                  persist-credentials: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
-            - name: Setup Deno
-              uses: denoland/setup-deno@v1
-              with:
-                  deno-version: v1.x
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
 
-            - name: Setup Node.js (for semantic-release)
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20"
+      - name: Setup Node.js (for semantic-release)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-            - name: Install semantic-release
-              run: |
-                  npm install -g semantic-release@23 \
-                    @semantic-release/git@10 \
-                    @semantic-release/changelog@6 \
-                    @semantic-release/exec@6 \
-                    conventional-changelog-conventionalcommits@7
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release@23 \
+            @semantic-release/git@10 \
+            @semantic-release/changelog@6 \
+            @semantic-release/exec@6 \
+            conventional-changelog-conventionalcommits@7
 
-            - name: Run semantic-release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: npx semantic-release
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
-            - name: Publish to JSR
-              if: steps.semantic-release.outputs.new_release_published == 'true'
-              run: deno publish
+      - name: Publish to JSR
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        run: npx jsr publish
