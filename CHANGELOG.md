@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/teamitfi/js-to-make/compare/v1.0.0...v1.0.1) (2025-11-13)
+
+
+### 🐛 Bug Fixes
+
+* docs ([0463039](https://github.com/teamitfi/js-to-make/commit/046303998d9ecd559d15ff7a7aff78d3769ce6e3))
+
 ## 1.0.0 (2025-11-13)
 
 
