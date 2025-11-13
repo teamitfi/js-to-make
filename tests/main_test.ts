@@ -11,10 +11,6 @@ function formatValue(value: unknown): string {
   return String(value);
 }
 
-function assert(condition: unknown, message: string): asserts condition {
-  if (!condition) throw new Error(message);
-}
-
 function assertEquals<T>(
   actual: T,
   expected: T,
