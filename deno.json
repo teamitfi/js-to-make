@@ -21,6 +21,7 @@
     "test": "deno test"
   },
   "fmt": {
+    "exclude": ["**/*.md"],
     "useTabs": false,
     "lineWidth": 80,
     "indentWidth": 2,
