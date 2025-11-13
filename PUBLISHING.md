@@ -145,12 +145,12 @@ Note: This method bypasses semantic-release and requires manual version manageme
 
 2. **Run a dry-run first** (recommended):
    ```bash
-   deno publish --dry-run
+   npx jsr publish --dry-run
    ```
 
 3. **Publish to JSR**:
    ```bash
-   deno publish
+   npx jsr publish
    ```
 
    On first publish, you'll be prompted to authenticate with JSR.
@@ -193,7 +193,7 @@ Check your package on JSR:
 
 ### "Uncommitted changes" Error
 
-If you get this error during `deno publish`:
+If you get this error during `npx jsr publish`:
 
 ```
 error: Aborting due to uncommitted changes
@@ -202,7 +202,7 @@ error: Aborting due to uncommitted changes
 Either:
 
 - Commit your changes: `git add . && git commit -m "message"`
-- Or use: `deno publish --allow-dirty` (not recommended for releases)
+- Or use: `npx jsr publish --allow-dirty` (not recommended for releases)
 
 ### "Invalid external import" Error
 
@@ -242,7 +242,7 @@ permissions:
 
 4. **Test dry-run publish**:
    ```bash
-   deno publish --dry-run --allow-dirty
+   npx jsr publish --dry-run --allow-dirty
    ```
 
 5. **Test the package locally**:
@@ -255,7 +255,7 @@ permissions:
 If this is your first time publishing to JSR:
 
 1. Visit https://jsr.io and sign in with GitHub
-2. Run `deno publish` - you'll be prompted to authenticate
+2. Run `npx jsr publish` - you'll be prompted to authenticate
 3. Follow the authentication flow
 4. Your credentials will be saved for future publishes
 

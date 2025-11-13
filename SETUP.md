@@ -82,8 +82,8 @@ You can manually trigger the publish workflow to test:
 You can publish from your local machine to test:
 
 ```bash
-deno publish --dry-run  # Test first
-deno publish            # Actual publish
+npx jsr publish --dry-run  # Test first
+npx jsr publish            # Actual publish
 ```
 
 This will open a browser for authentication.
